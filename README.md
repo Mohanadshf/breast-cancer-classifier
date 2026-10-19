@@ -40,12 +40,8 @@ python -m pip install -r requirements.txt
 
 Open the notebook in VS Code or Jupyter and select this environment as its Python kernel.
 
-## Important notes before interpreting results
+## Evaluation notes
 
-The notebook is a learning exercise, not a validated model. In its current form:
+The notebook splits the data before scaling, fits `StandardScaler` on the training features only, and uses that same fitted scaler to transform the test features. This avoids leaking test-set statistics into training. The two weight matrices use separate keys split from a seeded JAX PRNG key. The sigmoid derivative accepts sigmoid activations and calculates `activation * (1 - activation)`, matching the values passed to it during backpropagation.
 
-- The scaler is fit on all samples before the train/test split. For a leakage-free evaluation, split first, fit the scaler only on `X_train`, then transform both `X_train` and `X_test` with that fitted scaler.
-- Both weight matrices are initialized with the same JAX random key. Split the key to give each matrix an independent random stream.
-- `sigmoid_derivative` is written to take pre-sigmoid values, but the training loop passes already-sigmoided activations. Use `activation * (1 - activation)` for the derivative when passing activations, or pass the pre-sigmoid values instead.
-
-These issues can affect execution or training/evaluation quality. A high test accuracy on this dataset alone does not establish that the model will generalize to other populations or data sources.
+This is an educational exercise, not a validated model. A high test accuracy on this dataset alone does not establish that the model will generalize to other populations or data sources; this project must not be used for diagnosis or treatment decisions.
